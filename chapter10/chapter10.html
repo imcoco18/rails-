@@ -1,0 +1,79 @@
+一覧画面表示までの流れ
+
+
+１、URLを入力→Routing
+	httpメソッド：get
+
+２、Routing→Controller
+	ルーティングの指示によって、todolistsコントローラのindexアクションを確認
+	（todolist#index）
+
+３、Controller←→Model
+	コントローラにインスタンス変数を定義（@list=List.all）することで、「全ての投稿データを取得して下さい」の指示をListモデルへ送信
+	（@list=List.all）
+
+４、Model←→データベース
+	モデルがデータベースと通信し、指示通りに全ての投稿を取得し、@listsに保存
+	（データ取得）
+
+５、Controller←→View
+	インスタンス変数（@lists）がindex.html.erbファイルへ送られ、HTMLが作成
+	（@lists）
+
+６、Controller→画面
+	Viewで作成されたHTMLが、コントローラを経由してブラウザに送られ表示
+
+
+
+詳細画面表示までの流れ
+
+
+１、投稿を押す
+	listsテーブルの各カラムに「title」「body」「image」を入力し投稿を押して送信
+
+２、投稿を押す→Routing
+	投稿を押すと、投稿フォームのリクエストが/todolists、HTTPメソッドがPOSTであることが確認される。
+	form_forでは、インスタンス変数の中身によってデフォルトの行き先が決まっている
+	（/todolist   httpメソッド :post）
+
+３、Routing→Controller
+	ルーティングの指示によって、todolistsコントローラのcreateアクションにデータが送信
+	（todolist#create）
+
+４、Controller→Model
+	todolistsコントローラのcreateアクションでは、データベース保存用のインスタンス変数が設定され（@list=List.new(list_params)）、保存
+	（list=List.new(list_params)  list.save）
+
+５、Model→データベース
+	コントローラの記述によって、モデルに指示が送信され、データが保存
+	（データ保存）
+
+６、Controller→Routing
+	インスタンス変数.idのredirect_to todolist_pathの指定によって、保存後に投稿の詳細画面（todolistsコントローラのshowアクション）へ遷移するように指示を送信
+	なお、インスタンス変数では、名前付きパスprefixを使っている
+	（redirect_to  show_todolist_path(@list.id)）
+
+７、Routing→Controller
+	ルーティングから、todolistsコントローラのshowアクションへリクエストが送信
+	画面遷移はこのタイミングで行われる
+	（todolist#show）
+
+８、Controller←→Model
+	View表示用のインスタンス変数を準備。
+	ここでは、List．find（params[:id]）です
+	リクエストで送られるidの投稿を表示するため
+	（@list=List.find(params[:id]）
+
+９、Model←→データベース
+	指示によって、リクエストにあったidのデータが取得される
+	（データ取得）
+
+１０、Controller←→View
+	インスタンス変数（@list）がViewのShowページに送られて表示
+	（@list）
+
+１１、Controller→画面
+	コントローラを経由してブラウザに返され、結果のHTMLが画面上に表示
+	（詳細画面出力）
+
+	
